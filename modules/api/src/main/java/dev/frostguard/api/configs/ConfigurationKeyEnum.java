@@ -289,6 +289,7 @@ public enum ConfigurationKeyEnum {
     MISSING_TEMPLATE_SNAPSHOT_ENABLED_BOOL ("false",   Boolean.class,  ConfigCategory.SYSTEM),
     DISCORD_TOKEN_STRING                ("",            String.class,   ConfigCategory.SYSTEM),
     GAME_VERSION_STRING                 ("GLOBAL",      String.class,   ConfigCategory.SYSTEM),
+    OCR_LANGUAGE_STRING                 ("eng",         String.class,   ConfigCategory.SYSTEM),
     IDLE_BEHAVIOR_STRING                ("CLOSE_EMULATOR", String.class, ConfigCategory.SYSTEM),
     // Changed by pernerch | Date: 2026-07-04 | Why: allow explicit stop-policy selection for GUI stop action.
     STOP_BEHAVIOR_STRING                ("DO_NOTHING",  String.class,   ConfigCategory.SYSTEM),

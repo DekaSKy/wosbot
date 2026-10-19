@@ -40,6 +40,7 @@ REQUIRED_FILES = [
     "lib/tesseract/eng.traineddata",
     "lib/tesseract/osd.traineddata",
     "lib/tesseract/chi_sim.traineddata",
+    "lib/tesseract/rus.traineddata",
     "docs/README.md",
     "docs/PRIVACY.md",
     "custom_tasks/README.md",

@@ -17,6 +17,7 @@ import dev.frostguard.engine.schedule.QueuedEmulatorTask;
 import dev.frostguard.engine.service.ConfigService;
 import dev.frostguard.engine.service.ProfileService;
 import dev.frostguard.vision.ocr.OcrException;
+import dev.frostguard.vision.ocr.TesseractOcrProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,8 @@ public class EmulatorController {
     private static final PointData FULL   = new PointData(720, 1280);
 
     public static GameVersionEnum GAME = GameVersionEnum.GLOBAL;
+    // OCR language code resolved from OCR_LANGUAGE_STRING at initialize(); "eng" when unset.
+    public static String OCR_LANG = OcrLanguageEnum.ENGLISH.tessdataCode();
     private static EmulatorController inst;
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -67,6 +70,16 @@ public class EmulatorController {
         String regionStr = cfg.getOrDefault(ConfigurationKeyEnum.GAME_VERSION_STRING.name(), "GLOBAL");
         try { GAME = GameVersionEnum.valueOf(regionStr); }
         catch (IllegalArgumentException e) { GAME = GameVersionEnum.GLOBAL; LOG.warn("Bad region '{}', using GLOBAL", regionStr); }
+
+        // OCR glyph language (e.g. "rus" for Russian-localised interfaces)
+        String langStr = cfg.getOrDefault(ConfigurationKeyEnum.OCR_LANGUAGE_STRING.name(),
+                ConfigurationKeyEnum.OCR_LANGUAGE_STRING.getDefaultValue());
+        OCR_LANG = OcrLanguageEnum.resolveOrDefault(langStr);
+        if (OcrLanguageEnum.parse(langStr) == null && langStr != null && !langStr.isBlank()) {
+            LOG.warn("Bad OCR language '{}', using {}", langStr, OCR_LANG);
+        }
+        TesseractOcrProvider.setDefaultOcrLanguage(OCR_LANG);
+        LOG.info("OCR language: {}", OCR_LANG);
 
         // emulator backend
         String emuStr = cfg.get(ConfigurationKeyEnum.CURRENT_EMULATOR_STRING.name());

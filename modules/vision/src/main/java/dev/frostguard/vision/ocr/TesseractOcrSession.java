@@ -91,7 +91,7 @@ public final class TesseractOcrSession implements AutoCloseable {
         RetainedEngine(OcrSettingsData settings) {
             defaultLayout = settings.textLayout();
             setDatapath(TesseractOcrProvider.locateTessdata());
-            setLanguage("eng");
+            setLanguage(TesseractOcrProvider.resolveLanguage(settings));
             setConfigs(List.of(TesseractOcrProvider.quietConfigName(System.getProperty("os.name", ""))));
             setOcrEngineMode(1);
             setPageSegMode(TesseractOcrProvider.mapTextLayout(settings.textLayout() == null

@@ -31,6 +31,7 @@ public class OcrSettingsData {
     private final Color targetColor;
     private final boolean diagnosticMode;
     private final String allowedGlyphs;
+    private final String language;
 
     /* ---- private: construction via Configurator only ---- */
 
@@ -40,6 +41,7 @@ public class OcrSettingsData {
         this.targetColor       = cfg.targetColor;
         this.diagnosticMode    = cfg.diagnosticMode;
         this.allowedGlyphs    = cfg.allowedGlyphs;
+        this.language          = cfg.language;
     }
 
     /* ---- pre-configured presets ---- */
@@ -96,7 +98,8 @@ public class OcrSettingsData {
                 && !isolateForeground
                 && targetColor == null
                 && !diagnosticMode
-                && (allowedGlyphs == null || allowedGlyphs.isEmpty());
+                && (allowedGlyphs == null || allowedGlyphs.isEmpty())
+                && (language == null || language.isEmpty());
     }
 
     /**
@@ -111,7 +114,8 @@ public class OcrSettingsData {
                 .isolateForeground(this.isolateForeground)
                 .targetColor(this.targetColor)
                 .diagnosticMode(this.diagnosticMode)
-                .allowedGlyphs(this.allowedGlyphs);
+                .allowedGlyphs(this.allowedGlyphs)
+                .language(this.language);
     }
 
     /* ---- primary accessors ---- */
@@ -131,9 +135,14 @@ public class OcrSettingsData {
     /** Restricted character set for recognition (whitelist). */
     public String allowedGlyphs()                { return allowedGlyphs; }
 
+    /** Tesseract language code override (e.g. {@code "rus"}); {@code null} when unset. */
+    public String language()                     { return language; }
+
     /* ---- presence checks ---- */
 
     public boolean hasTextLayout() { return textLayout != null; }
+
+    public boolean hasLanguage() { return language != null && !language.isEmpty(); }
 
     public boolean hasGlyphFilter() {
         return allowedGlyphs != null && !allowedGlyphs.isEmpty();
@@ -168,21 +177,23 @@ public class OcrSettingsData {
             && diagnosticMode    == that.diagnosticMode
             && textLayout        == that.textLayout
             && Objects.equals(targetColor,   that.targetColor)
-            && Objects.equals(allowedGlyphs, that.allowedGlyphs);
+            && Objects.equals(allowedGlyphs, that.allowedGlyphs)
+            && Objects.equals(language,      that.language);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
                 textLayout, isolateForeground,
-                targetColor, diagnosticMode, allowedGlyphs);
+                targetColor, diagnosticMode, allowedGlyphs, language);
     }
 
     @Override
     public String toString() {
         return "OCR{layout=" + textLayout
                 + ", fgIsolation=" + isolateForeground
-                + ", glyphs=" + allowedGlyphs + "}";
+                + ", glyphs=" + allowedGlyphs
+                + ", lang=" + language + "}";
     }
 
     /**
@@ -196,6 +207,7 @@ public class OcrSettingsData {
         private Color targetColor;
         private boolean diagnosticMode;
         private String allowedGlyphs;
+        private String language;
 
         /* ---- primary setters ---- */
 
@@ -221,6 +233,12 @@ public class OcrSettingsData {
 
         public Configurator allowedGlyphs(String glyphs) {
             this.allowedGlyphs = glyphs;
+            return this;
+        }
+
+        /** Sets the Tesseract language code override (e.g. {@code "rus"} or {@code "eng+rus"}). */
+        public Configurator language(String lang) {
+            this.language = lang;
             return this;
         }
 

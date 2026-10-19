@@ -21,6 +21,7 @@ STATIC_REQUIRED_FILES = (
     "app/lib/tesseract/eng.traineddata",
     "app/lib/tesseract/osd.traineddata",
     "app/lib/tesseract/chi_sim.traineddata",
+    "app/lib/tesseract/rus.traineddata",
     "app/custom_tasks/README.md",
     "app/custom_tasks/dead_shot.json",
     "app/custom_tasks/dead_shot.txt",

@@ -717,7 +717,8 @@ public class TaskBuilderService {
                 return false;
             }
             String ocrText = OcrEngine.recognizeText(rawImage,
-                    new PointData(tlX, tlY), new PointData(brX, brY), "eng");
+                    new PointData(tlX, tlY), new PointData(brX, brY),
+                    dev.frostguard.vision.ocr.TesseractOcrProvider.resolveLanguage(null));
             node.setLastOcrResult(ocrText != null ? ocrText.trim() : "");
             runInfo("OCR result: '{}'", node.getLastOcrResult());
             return true;
