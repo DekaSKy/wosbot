@@ -122,6 +122,10 @@
                       <Label text="Game Version" disable="true" />
                       <Region HBox.hgrow="ALWAYS" />
                       <ComboBox fx:id="comboboxGameRegion" disable="true" maxWidth="Infinity" prefWidth="180.0" />
+                      <!-- OCR Language -->
+                      <Label text="OCR Language" />
+                      <Region HBox.hgrow="ALWAYS" />
+                      <ComboBox fx:id="comboboxOcrLanguage" maxWidth="Infinity" prefWidth="180.0" />
                   </HBox>
               </VBox>
           </children>

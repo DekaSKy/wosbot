@@ -23,6 +23,7 @@ required=(
   "tools/tesseract/chi_sim.traineddata"
   "tools/tesseract/eng.traineddata"
   "tools/tesseract/osd.traineddata"
+  "tools/tesseract/rus.traineddata"
 )
 
 failed=0

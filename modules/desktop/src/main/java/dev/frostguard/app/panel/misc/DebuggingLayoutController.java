@@ -655,7 +655,8 @@ public class DebuggingLayoutController {
 
         try {
             String result = OcrEngine.readFromFile(currentScreenshotFile, imgStartX, imgStartY,
-                    width, height, "eng");
+                    width, height,
+                    dev.frostguard.vision.ocr.TesseractOcrProvider.resolveLanguage(null));
             log("OCR Output:\n" + result);
         } catch (Exception e) {
             log("OCR Error: " + e.getMessage());

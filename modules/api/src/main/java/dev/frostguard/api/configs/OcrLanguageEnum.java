@@ -1,7 +1,9 @@
 package dev.frostguard.api.configs;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,6 +47,36 @@ public enum OcrLanguageEnum {
 
     /** Operator-facing name of the language. */
     public String displayName()     { return displayName; }
+
+    /**
+     * Builds the Tesseract {@code setLanguage} argument from one or more
+     * language codes (e.g. {@code "eng", "rus"} becomes {@code "eng+rus"}).
+     * Blanks and duplicates are dropped; falls back to English when no
+     * usable code remains.
+     */
+    public static String combineCodes(String... codes) {
+        List<String> parts = new ArrayList<>();
+        for (String code : codes) {
+            if (code == null) {
+                continue;
+            }
+            String trimmed = code.trim();
+            if (!trimmed.isEmpty() && !parts.contains(trimmed)) {
+                parts.add(trimmed);
+            }
+        }
+        return parts.isEmpty() ? ENGLISH.tessdataCode : String.join("+", parts);
+    }
+
+    /**
+     * Resolves the configured OCR language code, falling back to English
+     * when the value is blank or not a known bundled model. Accepts enum
+     * names, Tesseract codes, and display names.
+     */
+    public static String resolveOrDefault(String value) {
+        OcrLanguageEnum language = parse(value);
+        return language != null ? language.tessdataCode : ENGLISH.tessdataCode;
+    }
 
     /**
      * Case-insensitive lookup by the Tesseract model code

@@ -9,7 +9,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import dev.frostguard.vision.ocr.OcrEngine;
+import dev.frostguard.vision.ocr.TesseractOcrProvider;
 import dev.frostguard.api.configs.GameVersionEnum;
+import dev.frostguard.api.configs.OcrLanguageEnum;
 import dev.frostguard.engine.error.ADBConnectionException;
 import dev.frostguard.api.domain.*;
 import com.android.ddmlib.*;
@@ -450,7 +452,11 @@ public abstract class EmulatorInstance {
     public String readText(String idx, PointData a, PointData b, OcrSettingsData cfg, boolean reuseFrame) throws IOException, OcrException {
         RawImageData scr = selectFrame(lastFrame, idx, reuseFrame, () -> captureScreenshot(idx));
         if (scr == null) throw new IOException("Capture null");
-        String lang = (EmulatorController.GAME == GameVersionEnum.CHINA) ? "eng+chi_sim" : "eng";
+        // Region-only reads follow the configured OCR language (e.g. "rus+eng" for Russian interfaces).
+        String lang = TesseractOcrProvider.resolveLanguage(null);
+        if (EmulatorController.GAME == GameVersionEnum.CHINA) {
+            lang = OcrLanguageEnum.combineCodes(lang, "chi_sim");
+        }
         if (cfg == null) {
             return OcrEngine.recognizeText(scr, a, b, lang);
         }

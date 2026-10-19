@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import dev.frostguard.api.configs.OcrLanguageEnum;
 import dev.frostguard.api.domain.OcrSettingsData;
 import dev.frostguard.api.domain.OcrSettingsData.TextLayout;
 import net.sourceforge.tess4j.Tesseract;
@@ -92,7 +93,7 @@ public final class TesseractOcrProvider implements OcrProvider {
     private static Tesseract configureTesseract(OcrSettingsData cfg) {
         Tesseract t = new Tesseract();
         t.setDatapath(locateTessdata());
-        t.setLanguage("eng");
+        t.setLanguage(resolveLanguage(cfg));
         configureQuietOutput(t);
 
         if (cfg.hasTextLayout()) {
@@ -139,6 +140,37 @@ public final class TesseractOcrProvider implements OcrProvider {
         } catch (TesseractException e) {
             throw new OcrException("Tesseract OCR failed", e);
         }
+    }
+
+    /**
+     * Resolves the Tesseract language string for {@code cfg}: an explicit
+     * per-preset override when present, otherwise the globally configured
+     * OCR language (defaulting to English). The configured language is
+     * always combined with English so digits and Latin UI labels keep
+     * recognising correctly in mixed-language interfaces.
+     */
+    static String resolveLanguage(OcrSettingsData cfg) {
+        if (cfg != null && cfg.hasLanguage()) {
+            return cfg.language();
+        }
+        return OcrLanguageEnum.combineCodes(defaultOcrLanguage(),
+                OcrLanguageEnum.ENGLISH.tessdataCode());
+    }
+
+    /**
+     * Global OCR language code applied by callers that build requests
+     * without an explicit per-preset language. Set once at engine start-up
+     * from {@code OCR_LANGUAGE_STRING}; blank means English only.
+     */
+    private static volatile String defaultOcrLanguage = "";
+
+    public static String defaultOcrLanguage() {
+        return defaultOcrLanguage;
+    }
+
+    /** Overrides the global OCR language code (e.g. {@code "rus"}); blank restores English. */
+    public static void setDefaultOcrLanguage(String code) {
+        defaultOcrLanguage = code == null ? "" : code.trim();
     }
 
     // =====================================================================

@@ -79,6 +79,9 @@ public class EmuConfigLayoutController {
 	private ComboBox<GameVersionEnum> comboboxGameRegion;
 
 	@FXML
+	private ComboBox<OcrLanguageItem> comboboxOcrLanguage;
+
+	@FXML
 	private ComboBox<IdleBehaviorEnum> comboboxInactivityPolicy;
 
 	// Changed by pernerch | Date: 2026-07-04 | Why: expose dedicated stop behavior for manual GUI stop.
@@ -317,6 +320,9 @@ public class EmuConfigLayoutController {
 			}
 		});
 
+		// OCR language
+		configureOcrLanguageDropdown(cfg);
+
 		// Idle behaviour
 		comboboxInactivityPolicy.setItems(FXCollections.observableArrayList(IdleBehaviorEnum.values()));
 		IdleBehaviorEnum savedIdle = IdleBehaviorEnum.fromString(
@@ -517,6 +523,65 @@ public class EmuConfigLayoutController {
 		errorAlert.setHeaderText(null);
 		errorAlert.setContentText(detail);
 		errorAlert.showAndWait();
+	}
+
+	/* ────────────────────────────────────────────────
+	 *  OCR language dropdown
+	 * ──────────────────────────────────────────────── */
+
+	private void configureOcrLanguageDropdown(Map<String, String> cfg) {
+		comboboxOcrLanguage.setItems(FXCollections.observableArrayList(OcrLanguageItem.values()));
+		String savedLang = cfg.getOrDefault(
+				ConfigurationKeyEnum.OCR_LANGUAGE_STRING.name(),
+				ConfigurationKeyEnum.OCR_LANGUAGE_STRING.getDefaultValue());
+		OcrLanguageItem picked = OcrLanguageItem.fromCode(savedLang);
+		if (picked == null) {
+			picked = OcrLanguageItem.ENGLISH;
+		}
+		comboboxOcrLanguage.setValue(picked);
+
+		comboboxOcrLanguage.setOnAction(evt -> {
+			OcrLanguageItem chosen = comboboxOcrLanguage.getValue();
+			if (chosen != null) {
+				ScheduleService.obtain().persistEmulatorPath(
+						ConfigurationKeyEnum.OCR_LANGUAGE_STRING.name(), chosen.code);
+				dev.frostguard.engine.emulator.EmulatorController.OCR_LANG = chosen.code;
+				dev.frostguard.vision.ocr.TesseractOcrProvider.setDefaultOcrLanguage(chosen.code);
+			}
+		});
+	}
+
+	/** UI wrapper pairing a Tesseract language code with its operator-facing label. */
+	public enum OcrLanguageItem {
+		ENGLISH("eng", "English"),
+		RUSSIAN("rus", "Russian"),
+		CHINESE("chi_sim", "Chinese (Simplified)");
+
+		public final String code;
+		public final String label;
+
+		OcrLanguageItem(String code, String label) {
+			this.code = code;
+			this.label = label;
+		}
+
+		static OcrLanguageItem fromCode(String code) {
+			if (code == null) {
+				return null;
+			}
+			for (OcrLanguageItem item : values()) {
+				if (item.code.equalsIgnoreCase(code.trim())
+						|| item.name().equalsIgnoreCase(code.trim())) {
+					return item;
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return label;
+		}
 	}
 
 }

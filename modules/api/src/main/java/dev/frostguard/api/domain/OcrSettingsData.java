@@ -207,6 +207,7 @@ public class OcrSettingsData {
         private Color targetColor;
         private boolean diagnosticMode;
         private String allowedGlyphs;
+        private String language;
 
         /* ---- primary setters ---- */
 
@@ -232,6 +233,12 @@ public class OcrSettingsData {
 
         public Configurator allowedGlyphs(String glyphs) {
             this.allowedGlyphs = glyphs;
+            return this;
+        }
+
+        /** Sets the Tesseract language code override (e.g. {@code "rus"} or {@code "eng+rus"}). */
+        public Configurator language(String lang) {
+            this.language = lang;
             return this;
         }
 

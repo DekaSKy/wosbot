@@ -21,6 +21,26 @@ public final class CommonOCRSettings {
     private static final String LATIN_LETTERS =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
+    // Cyrillic letters (upper/lower, incl. ё/Ё) for Russian-localised interfaces.
+    private static final String CYRILLIC_LETTERS =
+            "абвгдежзийклмнопрстуфхцчшщъыьэюяёАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯЁ ";
+
+    /**
+     * Returns a copy of {@code base} whose glyph whitelist also accepts
+     * Cyrillic letters and whose Tesseract language loads the Russian model
+     * alongside English (digits and Latin labels keep recognising).
+     */
+    public static OcrSettingsData withRussian(OcrSettingsData base) {
+        String glyphs = base.allowedGlyphs();
+        String merged = (glyphs == null || glyphs.isEmpty())
+                ? LATIN_LETTERS + CYRILLIC_LETTERS
+                : glyphs + CYRILLIC_LETTERS;
+        return base.toConfigurator()
+                .allowedGlyphs(merged)
+                .language("rus+eng")
+                .build();
+    }
+
     // Shop labels can wrap to multiple lines and selected/unselected tabs use different colours.
     public static final OcrSettingsData SHOP_TAB_TEXT_SETTINGS =
             OcrSettingsData.builder()
